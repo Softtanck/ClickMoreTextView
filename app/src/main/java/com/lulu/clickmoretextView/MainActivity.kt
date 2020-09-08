@@ -1,4 +1,4 @@
-package com.lulu.intromoreview
+package com.lulu.clickmoretextView
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

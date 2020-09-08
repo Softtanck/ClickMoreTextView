@@ -1,4 +1,4 @@
-package com.lulu.intromoreview
+package com.lulu.clickmoretextView
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
