@@ -9,7 +9,7 @@ import android.view.View
 /**
  * TODO: document your custom view class.
  */
-class IntroMoreTextView : View {
+class ClickMoreTextView : View {
 
 
     private var textCharArray: CharArray?= null

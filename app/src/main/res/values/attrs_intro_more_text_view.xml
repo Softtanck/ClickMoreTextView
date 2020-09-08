@@ -1,5 +1,5 @@
 <resources>
-    <declare-styleable name="IntroMoreTextView">
+    <declare-styleable name="ClickMoreTextView">
         <attr name="exampleString" format="string" />
         <attr name="exampleDimension" format="dimension" />
         <attr name="exampleColor" format="color" />
