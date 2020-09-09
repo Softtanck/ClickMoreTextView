@@ -1,0 +1,7 @@
+<resources>
+    <declare-styleable name="ClickMoreTextView">
+        <attr name="text" format="string" />
+        <attr name="maxLines" format="integer" />
+        <attr name="isShowMore" format="boolean" />
+    </declare-styleable>
+</resources>
