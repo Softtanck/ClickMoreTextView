@@ -2,6 +2,8 @@ package com.lulu.clickmoretextView
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.RectF
 import android.text.TextPaint
 import android.util.AttributeSet
@@ -19,31 +21,6 @@ class ClickMoreTextView : View {
     public var moreTextPaint: TextPaint = TextPaint()
     private var textPaintTop = 0f
     private var isBreakFlag = false//排版标识
-    /**
-     * 文字大小
-     */
-    public var textSize = 80f
-        set(value) {
-            field = value
-            textPaint.textSize = value
-        }
-
-    /**
-     * 文字颜色
-     */
-    public var textColor = 0x000000
-        set(value) {
-            field = value
-            textPaint.color = value
-        }
-    /**
-     * 文字透明度
-     */
-    public var textAlpha = 255
-        set(value) {
-            field = value
-            textPaint.alpha = value
-        }
     /**
      * 正文间距 倍数
      */
@@ -66,7 +43,27 @@ class ClickMoreTextView : View {
             field = value
             textCharArray = value.toCharArray()
         }
+    /**
+     * 文字大小
+     */
+    public var textSize = 80f
+        set(value) {
+            field = value
+            textPaint.textSize = value
+        }
 
+    /**
+     * 文字颜色
+     */
+    public var textColor = 0x000000
+        set(value) {
+            field = value
+            textPaint.color = value
+        }
+
+    /**
+     * 是否展示 More
+     */
     public var isShowMore = false
         set(value) {
             field = value
@@ -79,7 +76,25 @@ class ClickMoreTextView : View {
     public var moreText = "查看更多"
         set(value) {
             field = value
-            requestLayout()
+        }
+
+    /**
+     * 更多文字颜色
+     */
+    public var moreTextColor = 0x000000
+        set(value){
+            field = value
+            moreTextPaint.color = value
+        }
+
+
+    /**
+     * 更多文字大小
+     */
+    public var moreTextSize = 80f
+        set(value){
+            field = value
+            moreTextPaint.textSize = value
         }
 
     /**
@@ -137,20 +152,20 @@ class ClickMoreTextView : View {
         }
         this.maxLines = a.getInt(R.styleable.ClickMoreTextView_maxLines, Int.MAX_VALUE)
         this.isShowMore = a.getBoolean(R.styleable.ClickMoreTextView_isShowMore, false)
-        a.recycle()
 
-        textPaint.color = textColor
-        textPaint.alpha = textAlpha
-        textPaint.textSize = textSize
+        this.textColor = a.getColor(R.styleable.ClickMoreTextView_textColor, 0x000000)
+        this.textSize = a.getDimension(R.styleable.ClickMoreTextView_textSize, 80f)
+
         textPaint.isAntiAlias = true//抗锯齿
 
-        moreTextPaint.color = textColor
-        moreTextPaint.alpha = textAlpha
-        moreTextPaint.isFakeBoldText = true
-        moreTextPaint.textSize = textSize
-        moreTextPaint.isAntiAlias = true//抗锯齿
+        this.moreTextColor = a.getColor(R.styleable.ClickMoreTextView_moreTextColor, 0x000000)
+        this.moreTextSize = a.getDimension(R.styleable.ClickMoreTextView_textSize, 80f)
 
+        moreTextPaint.isAntiAlias = true//抗锯齿
+        moreTextPaint.flags = Paint.UNDERLINE_TEXT_FLAG//下划线
+        moreTextPaint.isFakeBoldText = true
         isEnabled = true
+        a.recycle()
     }
 
     override fun requestLayout() {
@@ -332,12 +347,6 @@ class ClickMoreTextView : View {
      * 查看更多点击区域
      */
     private val moreTextClickArea = RectF()
-
-    /**
-     *
-     */
-    private var curMoreTextUp = false
-    private var isDownArea = false
 
     private var lastDownX = -1f
     private var lastDownY = -1f
