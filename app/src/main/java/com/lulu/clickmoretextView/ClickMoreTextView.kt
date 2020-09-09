@@ -2,7 +2,6 @@ package com.lulu.clickmoretextView
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.text.TextPaint
@@ -268,8 +267,8 @@ class ClickMoreTextView : View {
         val moreTextFontMetrics = moreTextPaint.fontMetrics
         val lines = getLines()
         if (lines == maxLines - 1) {//此时说明正在遍历 最后一行
-            if (checkEnoughLine(curX, dotLen, availableWidth)//是否满足一行要求
-                    || checkParagraph(index)) {//有 \n 的场景
+            if (checkMoreTextForEnoughLine(curX, dotLen, availableWidth)//是否满足一行要求
+                    || checkMoreTextForParagraph(index)) {//有 \n 的场景
                 val element = TextPosition()
                 element.x = curX
                 element.y = curY
@@ -286,7 +285,7 @@ class ClickMoreTextView : View {
         return false
     }
 
-    private fun checkParagraph(index: Int): Boolean {
+    private fun checkMoreTextForParagraph(index: Int): Boolean {
         textCharArray?.let {
             if (it.size < index + 1) {//首先判断是否有一下个字符
                 return false
@@ -298,7 +297,7 @@ class ClickMoreTextView : View {
         return false
     }
 
-    private fun checkEnoughLine(
+    private fun checkMoreTextForEnoughLine(
             curX: Float,
             dotLen: Float,
             availableWidth: Int
