@@ -243,7 +243,7 @@ class ClickMoreTextView : View {
                 }
                 textPositions.add(textPosition)
                 i++//移动游标
-                if (checkNeedMoreText(availableWidth, curX, curY)) {
+                if (checkNeedMoreText(availableWidth, curX, curY, i)) {
                     break
                 }
             }
@@ -259,7 +259,7 @@ class ClickMoreTextView : View {
     /**
      * 检查 MoreText 插入点
      */
-    private fun checkNeedMoreText(availableWidth: Int, curX: Float, curY: Float): Boolean {
+    private fun checkNeedMoreText(availableWidth: Int, curX: Float, curY: Float, index: Int): Boolean {
         if (isShowMore.not() || maxLines == Int.MAX_VALUE) {
             return false
         }
@@ -268,7 +268,8 @@ class ClickMoreTextView : View {
         val moreTextFontMetrics = moreTextPaint.fontMetrics
         val lines = getLines()
         if (lines == maxLines - 1) {//此时说明正在遍历 最后一行
-            if (curX + moreTextW + dotLen + textPaint.measureText("中") > availableWidth) {
+            if (checkEnoughLine(curX, dotLen, availableWidth)//是否满足一行要求
+                    || checkParagraph(index)) {//有 \n 的场景
                 val element = TextPosition()
                 element.x = curX
                 element.y = curY
@@ -284,6 +285,25 @@ class ClickMoreTextView : View {
         }
         return false
     }
+
+    private fun checkParagraph(index: Int): Boolean {
+        textCharArray?.let {
+            if (it.size < index + 1) {//首先判断是否有一下个字符
+                return false
+            }
+            if ('\n' == it[index]) {//另外判断当前字符是否为 \n
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun checkEnoughLine(
+            curX: Float,
+            dotLen: Float,
+            availableWidth: Int
+    ) = curX + moreTextW + dotLen + textPaint.measureText("中") > availableWidth
+
 
     /**
      * 是否是段落
