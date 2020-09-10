@@ -163,7 +163,6 @@ class ClickMoreTextView : View {
         moreTextPaint.isAntiAlias = true//抗锯齿
         moreTextPaint.flags = Paint.UNDERLINE_TEXT_FLAG//下划线
         moreTextPaint.isFakeBoldText = true
-        isEnabled = true
         a.recycle()
     }
 
