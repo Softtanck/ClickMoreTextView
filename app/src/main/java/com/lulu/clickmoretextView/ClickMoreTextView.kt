@@ -15,6 +15,9 @@ import android.view.View
  */
 private const val TAG = "ClickMoreTextView"
 class ClickMoreTextView : View {
+    companion object {
+        const val DEBUG = true
+    }
     private var textCharArray: CharArray?= null
     private var textPaint: TextPaint = TextPaint()
     public var moreTextPaint: TextPaint = TextPaint()
@@ -168,7 +171,9 @@ class ClickMoreTextView : View {
 
     override fun requestLayout() {
         super.requestLayout()
-        Log.d(TAG, "requestLayout: last isBreakFlag: $isBreakFlag")
+        if (DEBUG) {
+            Log.d(TAG, "requestLayout: last isBreakFlag: $isBreakFlag")
+        }
         isBreakFlag = false
     }
 
@@ -180,7 +185,9 @@ class ClickMoreTextView : View {
         if (layoutHeight > 0 ) {
             height = layoutHeight.toInt()
         }
-        Log.d(TAG, "onMeasure: getLines():${getLines()} maxLines: $maxLines width:$width height:$height")
+        if (DEBUG) {
+            Log.d(TAG, "onMeasure: getLines():${getLines()} maxLines: $maxLines width:$width height:$height")
+        }
         if (getLines() > maxLines && maxLines - 1 > 0) {
             val textBottomH = textPaint.fontMetrics.bottom.toInt()
             height = (textLineYs[maxLines-1]).toInt() + paddingBottom + textBottomH
@@ -206,7 +213,9 @@ class ClickMoreTextView : View {
         if (isBreakFlag) {
             return
         }
-        Log.d(TAG, "breadText: 开始排版")
+        if (DEBUG) {
+            Log.d(TAG, "breadText: 开始排版")
+        }
         isBreakFlag = true
         val availableWidth = w - paddingRight
         textLineYs.clear()
@@ -249,7 +258,9 @@ class ClickMoreTextView : View {
             textLineYs.add(curY)
             curY += paddingBottom
             layoutHeight = curY + textFontMetrics.bottom//应加上后面的Bottom
-            Log.d(TAG, "总行数： ${getLines()}" )
+            if (DEBUG) {
+                Log.d(TAG, "总行数： ${getLines()}" )
+            }
         }
 
     }
@@ -344,14 +355,18 @@ class ClickMoreTextView : View {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        Log.d(TAG, "onDraw: ")
+        if (DEBUG) {
+            Log.d(TAG, "onDraw: ")
+        }
         val posSize = textPositions.size
         for (i in 0 until posSize) {
             val textPosition = textPositions[i]
             if (textPosition.y + textPaintTop > height-paddingBottom) {
                 break
             }
-            //Log.d(TAG, "onDraw: height： $height  height-paddingBottom:${ height-paddingBottom} textPosition.y+textPaintTop: ${textPosition.y + textPaintTop}")
+            if (DEBUG) {
+                //Log.d(TAG, "onDraw: height： $height  height-paddingBottom:${ height-paddingBottom} textPosition.y+textPaintTop: ${textPosition.y + textPaintTop}")
+            }
             canvas.drawText(textPosition.text, textPosition.x, textPosition.y, textPaint)
         }
         if (isShowMore && maxLines == getLines() && posSize > 0) {
@@ -373,23 +388,30 @@ class ClickMoreTextView : View {
         event?.let {
             val x = event.x
             val y = event.y
-            Log.d(TAG, "onTouchEvent: x: $x y:$y event: ${event.action}")
+            if (DEBUG) {
+                Log.d(TAG, "onTouchEvent: x: $x y:$y event: ${event.action}")
+            }
             when(it.action) {
                 MotionEvent.ACTION_DOWN -> {
                     lastDownX = x
                     lastDownY = y
+                    if (moreTextClickArea.contains(lastDownX, lastDownY)) {
+                        return true
+                    }
                 }
                 MotionEvent.ACTION_UP -> {
-                    if (moreTextClickArea.contains(lastDownX, lastDownY) &&
-                            moreTextClickArea.contains(x, y)) {
-                        Log.d(TAG, "onTouchEvent: 点击更多回调")
+                    if (moreTextClickArea.contains(x, y)) {
+                        if (DEBUG) {
+                            Log.d(TAG, "onTouchEvent: 点击更多回调")
+                        }
                         moreTextClickListener?.onClick(this)
+                        return false
                     }
                 }
                 else -> {}
             }
         }
-        return true
+        return false
     }
 
     /**
