@@ -52,6 +52,7 @@ class ClickMoreTextView : View {
         set(value) {
             field = value
             textPaint.textSize = value
+            invalidate()
         }
 
     /**
@@ -61,6 +62,7 @@ class ClickMoreTextView : View {
         set(value) {
             field = value
             textPaint.color = value
+            invalidate()
         }
 
     /**
@@ -87,6 +89,7 @@ class ClickMoreTextView : View {
         set(value){
             field = value
             moreTextPaint.color = value
+            invalidate()
         }
 
 
@@ -97,6 +100,7 @@ class ClickMoreTextView : View {
         set(value){
             field = value
             moreTextPaint.textSize = value
+            invalidate()
         }
 
     /**
