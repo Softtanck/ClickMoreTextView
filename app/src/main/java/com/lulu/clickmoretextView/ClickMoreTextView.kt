@@ -260,8 +260,8 @@ class ClickMoreTextView : View {
             textPosition.text = c.toString()
             //curX 向右移动一个字
             curX += cW
-            if (isParagraph(textCharArray, i) ||//段落内
-                isNeedNewLine(textCharArray, i, curX, availableWidth)
+            if (isParagraph(i) ||//段落内
+                isNeedNewLine(i, curX, availableWidth)
             ) { //折行
                 textLineYs.add(curY)
                 //断行需要回溯
@@ -370,14 +370,12 @@ class ClickMoreTextView : View {
     /**
      * 是否是段落
      */
-    private fun isParagraph(charArray: CharArray?, curIndex: Int): Boolean {
-        charArray?.let {
-            if (charArray.size <= curIndex) {
-                return false
-            }
-            if (charArray[curIndex] == '\n') {
-                return true
-            }
+    private fun isParagraph(curIndex: Int): Boolean {
+        if (textCharArray.size <= curIndex) {
+            return false
+        }
+        if (textCharArray[curIndex] == '\n') {
+            return true
         }
         return false
     }
@@ -386,19 +384,16 @@ class ClickMoreTextView : View {
      * 是否需要另起一行
      */
     private fun isNeedNewLine(
-        charArray: CharArray?,
         curIndex: Int,
         curX: Float,
         maxWith: Int
     ): Boolean {
-        charArray?.let {
-            if (charArray.size <= curIndex + 1) {//需要判断下一个 char
-                return false
-            }
-            //判断下一个 char 是否到达边界
-            if (curX + textPaint.measureText(charArray[curIndex + 1].toString()) > maxWith) {
-                return true
-            }
+        if (textCharArray.size <= curIndex + 1) {//需要判断下一个 char
+            return false
+        }
+        //判断下一个 char 是否到达边界
+        if (curX + textPaint.measureText(textCharArray[curIndex + 1].toString()) > maxWith) {
+            return true
         }
         if (curX > maxWith) {
             return true
