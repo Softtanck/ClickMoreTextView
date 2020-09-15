@@ -14,15 +14,18 @@ import android.view.View
  * 优雅的实现 ”查看更多“
  */
 private const val TAG = "ClickMoreTextView"
+
 class ClickMoreTextView : View {
     companion object {
         const val DEBUG = true
     }
-    private var textCharArray: CharArray?= null
+
+    private var textCharArray = charArrayOf()
     private var textPaint: TextPaint = TextPaint()
     public var moreTextPaint: TextPaint = TextPaint()
     private var textPaintTop = 0f
     private var isBreakFlag = false//排版标识
+
     /**
      * 正文间距 倍数
      */
@@ -37,6 +40,7 @@ class ClickMoreTextView : View {
             //重新测量
             requestLayout()
         }
+
     /**
      * 文本内容
      */
@@ -45,6 +49,7 @@ class ClickMoreTextView : View {
             field = value
             textCharArray = value.toCharArray()
         }
+
     /**
      * 文字大小
      */
@@ -70,9 +75,15 @@ class ClickMoreTextView : View {
      */
     public var isShowMore = false
         set(value) {
+            isShouldShowMore = value
             field = value
             requestLayout()
         }
+
+    /**
+     * 通过各个条件判断当前是否应该展示 MoreText
+     */
+    private var isShouldShowMore = false
 
     /**
      * 查看更多
@@ -86,7 +97,7 @@ class ClickMoreTextView : View {
      * 更多文字颜色
      */
     public var moreTextColor = 0x000000
-        set(value){
+        set(value) {
             field = value
             moreTextPaint.color = value
             invalidate()
@@ -97,7 +108,7 @@ class ClickMoreTextView : View {
      * 更多文字大小
      */
     public var moreTextSize = 80f
-        set(value){
+        set(value) {
             field = value
             moreTextPaint.textSize = value
             invalidate()
@@ -130,7 +141,7 @@ class ClickMoreTextView : View {
     /**
      * 布局高度
      */
-    private var layoutHeight  = 0f
+    private var layoutHeight = 0f
 
     constructor(context: Context) : super(context) {
         init(null, 0)
@@ -151,7 +162,8 @@ class ClickMoreTextView : View {
     private fun init(attrs: AttributeSet?, defStyle: Int) {
         // Load attributes
         val a = context.obtainStyledAttributes(
-            attrs, R.styleable.ClickMoreTextView, defStyle, 0)
+            attrs, R.styleable.ClickMoreTextView, defStyle, 0
+        )
         val text = a.getString(R.styleable.ClickMoreTextView_text)
         text?.let {
             this.text = it
@@ -186,15 +198,18 @@ class ClickMoreTextView : View {
         val width = MeasureSpec.getSize(widthMeasureSpec)
         var height = MeasureSpec.getSize(heightMeasureSpec)
         breadText(width)
-        if (layoutHeight > 0 ) {
+        if (layoutHeight > 0) {
             height = layoutHeight.toInt()
         }
         if (DEBUG) {
-            Log.d(TAG, "onMeasure: getLines():${getLines()} maxLines: $maxLines width:$width height:$height")
+            Log.d(
+                TAG,
+                "onMeasure: getLines():${getLines()} maxLines: $maxLines width:$width height:$height"
+            )
         }
         if (getLines() > maxLines && maxLines - 1 > 0) {
             val textBottomH = textPaint.fontMetrics.bottom.toInt()
-            height = (textLineYs[maxLines-1]).toInt() + paddingBottom + textBottomH
+            height = (textLineYs[maxLines - 1]).toInt() + paddingBottom + textBottomH
         }
         setMeasuredDimension(width, height)
     }
@@ -220,6 +235,7 @@ class ClickMoreTextView : View {
         if (DEBUG) {
             Log.d(TAG, "breadText: 开始排版")
         }
+        moreTextW = moreTextPaint.measureText(moreText)
         isBreakFlag = true
         val availableWidth = w - paddingRight
         textLineYs.clear()
@@ -232,91 +248,124 @@ class ClickMoreTextView : View {
         textPaintTop = textFontMetrics.top
         val lineHeight = textFontMetrics.bottom - textFontMetrics.top
         curY -= textFontMetrics.top//指定顶点坐标
-        val size = textCharArray?.size
-        size?.let {
-            var i = 0
-            while (i < size) {
-                val textPosition = TextPosition()
-                val c = textCharArray?.get(i)
-                val cW = textPaint.measureText(c.toString())
-                //位置保存点
-                textPosition.x = curX
-                textPosition.y = curY
-                textPosition.text = c.toString()
-                //curX 向右移动一个字
-                curX += cW
-                if (isParagraph(textCharArray, i) ||//段落内
-                    isNeedNewLine(textCharArray, i, curX, availableWidth)) { //折行
-                    textLineYs.add(curY)
-                    //断行需要回溯
-                    curX = initX
-                    curY += lineHeight * lineSpacingMultiplier
-                }
-                textPositions.add(textPosition)
-                i++//移动游标
-                if (checkNeedMoreText(availableWidth, curX, curY, i)) {
-                    break
-                }
+        val size = textCharArray.size
+        var i = 0
+        while (i < size) {
+            val textPosition = TextPosition()
+            val c = textCharArray.get(i)
+            val cW = textPaint.measureText(c.toString())
+            //位置保存点
+            textPosition.x = curX
+            textPosition.y = curY
+            textPosition.text = c.toString()
+            //curX 向右移动一个字
+            curX += cW
+            if (isParagraph(textCharArray, i) ||//段落内
+                isNeedNewLine(textCharArray, i, curX, availableWidth)
+            ) { //折行
+                textLineYs.add(curY)
+                //断行需要回溯
+                curX = initX
+                curY += lineHeight * lineSpacingMultiplier
             }
-            //最后一行
-            textLineYs.add(curY)
-            curY += paddingBottom
-            layoutHeight = curY + textFontMetrics.bottom//应加上后面的Bottom
-            if (DEBUG) {
-                Log.d(TAG, "总行数： ${getLines()}" )
-            }
+            textPositions.add(textPosition)
+            i++//移动游标
+            //记录 MoreText位置
+            recordMoreTextPosition(availableWidth, curX, curY, i)
         }
-
+        //最后一行
+        textLineYs.add(curY)
+        curY += paddingBottom
+        layoutHeight = curY + textFontMetrics.bottom//应加上后面的Bottom
+        checkMoreTextShouldShow()//排版结束后，检查MoreText 是否应该展示
+        if (DEBUG) {
+            Log.d(TAG, "总行数： ${getLines()}")
+        }
     }
 
     /**
-     * 检查 MoreText 插入点
+     * "..." 索引值
      */
-    private fun checkNeedMoreText(availableWidth: Int, curX: Float, curY: Float, index: Int): Boolean {
+    private var dotIndex = -1
+
+    /**
+     * "..." 位置
+     */
+    private var dotPosition = TextPosition("...")
+
+    /**
+     * 记录 MoreText 位置
+     */
+    private fun recordMoreTextPosition(availableWidth: Int, curX: Float, curY: Float, index: Int) {
         if (isShowMore.not() || maxLines == Int.MAX_VALUE) {
-            return false
+            return
+        }
+        //只记录符合要求的第一个位置的
+        if (dotIndex > 0 || index >= textCharArray.size) {
+            return
+        }
+        val lines = getLines()
+        if (lines != maxLines - 1) {
+            return
         }
         val dotLen = textPaint.measureText("...")
-        moreTextW = moreTextPaint.measureText(moreText)
-        val moreTextFontMetrics = moreTextPaint.fontMetrics
-        val lines = getLines()
-        if (lines == maxLines - 1) {//此时说明正在遍历 最后一行
-            if (checkMoreTextForEnoughLine(curX, dotLen, availableWidth)//是否满足一行要求
-                    || checkMoreTextForParagraph(index)) {//有 \n 的场景
-                val element = TextPosition()
-                element.x = curX
-                element.y = curY
-                element.text = "..."
-                textPositions.add(element)
-                //点击区域
-                moreTextClickArea.top = curY + moreTextFontMetrics.top
-                moreTextClickArea.right = availableWidth.toFloat()
-                moreTextClickArea.bottom = curY + moreTextFontMetrics.bottom
-                moreTextClickArea.left = curX
-                return true
-            }
-        }
-        return false
-    }
+        //目前在最后一行
+        if (checkMoreTextForEnoughLine(curX, dotLen, availableWidth)//这一行满足一行时
+            || checkMoreTextForParagraph(index)//当前是换行符
+        ) {
+            dotPosition.x = curX
+            dotPosition.y = curY
+            dotIndex = textPositions.size
 
-    private fun checkMoreTextForParagraph(index: Int): Boolean {
-        textCharArray?.let {
-            if (it.size < index + 1) {//首先判断是否有一下个字符
-                return false
-            }
-            if ('\n' == it[index]) {//另外判断当前字符是否为 \n
-                return true
-            }
+            //点击区域
+            val moreTextFontMetrics = moreTextPaint.fontMetrics
+            moreTextClickArea.top = curY + moreTextFontMetrics.top
+            moreTextClickArea.right = availableWidth.toFloat()
+            moreTextClickArea.bottom = curY + moreTextFontMetrics.bottom
+            moreTextClickArea.left = curX
         }
-        return false
     }
 
     private fun checkMoreTextForEnoughLine(
-            curX: Float,
-            dotLen: Float,
-            availableWidth: Int
+        curX: Float,
+        dotLen: Float,
+        availableWidth: Int
     ) = curX + moreTextW + dotLen + textPaint.measureText("中") > availableWidth
 
+    private fun checkMoreTextForParagraph(index: Int): Boolean {
+        if ('\n' == textCharArray[index]) {//判断当前字符是否为 \n
+            return true
+        }
+        return false
+    }
+
+    /**
+     * 真正检查 MoreText 是否应该展示
+     */
+    private fun checkMoreTextShouldShow() {
+        if (isShowMore.not()) {
+            return
+        }
+        if (getLines() <= maxLines || maxLines == Int.MAX_VALUE) {
+            isShouldShowMore = false
+            return
+        }
+        if (dotIndex < 0) {
+            return
+        }
+        isShouldShowMore = true
+        textPositions.add(dotIndex, dotPosition)
+        val temp = arrayListOf<TextPosition>()
+        for (textPosition in textPositions.withIndex()) {
+            if (textPosition.index == dotIndex) {
+                temp.add(dotPosition)
+                break
+            }
+            temp.add(textPosition.value)
+        }
+        textPositions.clear()
+        textPositions.addAll(temp)
+    }
 
     /**
      * 是否是段落
@@ -341,13 +390,13 @@ class ClickMoreTextView : View {
         curIndex: Int,
         curX: Float,
         maxWith: Int
-    ) : Boolean{
+    ): Boolean {
         charArray?.let {
-            if (charArray.size <= curIndex+1) {//需要判断下一个 char
+            if (charArray.size <= curIndex + 1) {//需要判断下一个 char
                 return false
             }
             //判断下一个 char 是否到达边界
-            if (curX + textPaint.measureText(charArray[curIndex+1].toString()) > maxWith) {
+            if (curX + textPaint.measureText(charArray[curIndex + 1].toString()) > maxWith) {
                 return true
             }
         }
@@ -365,7 +414,7 @@ class ClickMoreTextView : View {
         val posSize = textPositions.size
         for (i in 0 until posSize) {
             val textPosition = textPositions[i]
-            if (textPosition.y + textPaintTop > height-paddingBottom) {
+            if (textPosition.y + textPaintTop > height - paddingBottom) {
                 break
             }
             if (DEBUG) {
@@ -373,8 +422,8 @@ class ClickMoreTextView : View {
             }
             canvas.drawText(textPosition.text, textPosition.x, textPosition.y, textPaint)
         }
-        if (isShowMore && maxLines == getLines() && posSize > 0) {
-            val moreTextY = textPositions[posSize - 1].y
+        if (isShouldShowMore) {
+            val moreTextY = dotPosition.y
             val moreTextX = width - moreTextW - paddingRight
             canvas.drawText(moreText, moreTextX, moreTextY, moreTextPaint)
         }
@@ -389,13 +438,16 @@ class ClickMoreTextView : View {
     private var lastDownY = -1f
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
+        if (isShouldShowMore.not()) {
+            return false
+        }
         event?.let {
             val x = event.x
             val y = event.y
             if (DEBUG) {
                 Log.d(TAG, "onTouchEvent: x: $x y:$y event: ${event.action}")
             }
-            when(it.action) {
+            when (it.action) {
                 MotionEvent.ACTION_DOWN -> {
                     lastDownX = x
                     lastDownY = y
@@ -412,7 +464,8 @@ class ClickMoreTextView : View {
                         return false
                     }
                 }
-                else -> {}
+                else -> {
+                }
             }
         }
         return false
@@ -428,8 +481,7 @@ class ClickMoreTextView : View {
     /**
      * 当前文字位置
      */
-    class TextPosition {
-        var text = ""
+    class TextPosition(var text: String = "") {
         var x = 0f
         var y = 0f
     }
