@@ -17,7 +17,7 @@ private const val TAG = "ClickMoreTextView"
 
 class ClickMoreTextView : View {
     companion object {
-        const val DEBUG = true
+        var DEBUG = BuildConfig.DEBUG
     }
 
     private var textCharArray = charArrayOf()
