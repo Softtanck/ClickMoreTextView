@@ -197,7 +197,7 @@ class ClickMoreTextView : View {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         val width = MeasureSpec.getSize(widthMeasureSpec)
         var height = MeasureSpec.getSize(heightMeasureSpec)
-        breadText(width)
+        breakText(width)
         if (layoutHeight > 0) {
             height = layoutHeight.toInt()
         }
@@ -219,13 +219,13 @@ class ClickMoreTextView : View {
      */
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        //breadText(w)
+        //breakText(w)
     }
 
     /**
      * 文字排版
      */
-    private fun breadText(w: Int) {
+    private fun breakText(w: Int) {
         if (w <= 0) {
             return
         }
@@ -233,7 +233,7 @@ class ClickMoreTextView : View {
             return
         }
         if (DEBUG) {
-            Log.d(TAG, "breadText: 开始排版")
+            Log.d(TAG, "breakText: 开始排版")
         }
         moreTextW = moreTextPaint.measureText(moreText)
         isBreakFlag = true
@@ -354,7 +354,6 @@ class ClickMoreTextView : View {
             return
         }
         isShouldShowMore = true
-        textPositions.add(dotIndex, dotPosition)
         val temp = arrayListOf<TextPosition>()
         for (textPosition in textPositions.withIndex()) {
             if (textPosition.index == dotIndex) {
