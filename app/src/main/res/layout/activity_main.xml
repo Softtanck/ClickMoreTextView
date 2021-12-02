@@ -7,31 +7,38 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+    <!--     app:text="根据openjdk 8的源码我们可以看出，getandaddint()循环获取给定对象o中的偏移量处的值v，然后判断内存值是否等于然后判断内存值是否等于然于设0123456789012"-->
     <com.lulu.clickmoretextView.ClickMoreTextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:text="根据OpenJDK 8的源码我们可以看出，getAndAddInt()循环获取给定对象o中的偏移量处的值v，然后判断内存值是否等于然后判断内存值是否等于然于设0123456789012"
-        app:maxLines="4"
-        app:moreTextColor="#F00"
-        app:textColor="#000"
-        app:textSize="20dp"
+        android:padding="20dp"
         app:isShowMore="true"
-        app:moreTextSize="20dp"
-        android:padding="20dp" />
+        app:maxLines="3"
+        app:moreTextColor="#FF0FB588"
+        app:moreTextSize="14sp"
+        app:text="当聊天机器人或虚拟助理拥有了个性会听起来很自然。例如：Alexa 就很好玩，它对各种事物都有自己的见解。甚至助理拥有了个性会听起来4sdf我们习惯了22操ffadfa技术的快速革新，甚至我们都无法想象习惯了技术的快速革.当asdfasd11111天机器人或虚拟助理拥有了个性会听起来很自然。例如：Alexa 就很好玩，它对各种事物都有自己的见解。甚至助理拥有了个性会听起来4"
+        app:textColor="#FF333333"
+        app:textSize="14sp" />
 
     <Button
         android:id="@+id/showClick"
-        android:text="展示/隐藏"
-        android:layout_gravity="bottom"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:text="展示/隐藏" />
 
     <Button
         android:id="@+id/maxLinesClick"
-        android:text="设置最大行"
-        android:layout_gravity="bottom"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:text="设置最大行" />
+
+    <TextView
+        android:text="测试文本"
+        android:letterSpacing="0"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
 </LinearLayout>

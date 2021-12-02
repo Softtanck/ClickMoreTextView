@@ -1,5 +1,6 @@
 package com.lulu.clickmoretextView
 
+import android.content.res.Resources
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -15,11 +16,11 @@ class MainActivity : AppCompatActivity() {
             textView.isShowMore = !textView.isShowMore
         }
         maxLinesClick.setOnClickListener {
-            if (textView.maxLines == 4) {
+//            if (textView.maxLines == 4) {
                 textView.maxLines = Int.MAX_VALUE
-            } else {
-                textView.maxLines = 4
-            }
+//            } else {
+//                textView.maxLines = 4
+//            }
         }
         textView.setMoreTextOnClickListener(View.OnClickListener {
             val introDialog = IntroDialog()
@@ -28,3 +29,17 @@ class MainActivity : AppCompatActivity() {
         })
     }
 }
+
+private var SCALED_DENSITY = 0f
+fun getScaledDensity(): Float {
+    if (SCALED_DENSITY == 0f) {
+        SCALED_DENSITY = Resources.getSystem().displayMetrics.scaledDensity
+    }
+    return SCALED_DENSITY
+}
+
+fun convertSpToPx(sp: Int): Int {
+    return (sp * getScaledDensity() + 0.5f).toInt()
+}
+
+val Number.sp: Float get() = convertSpToPx(toInt()).toFloat()

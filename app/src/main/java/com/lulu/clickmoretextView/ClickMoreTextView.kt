@@ -2,7 +2,6 @@ package com.lulu.clickmoretextView
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Paint
 import android.graphics.RectF
 import android.text.TextPaint
 import android.util.AttributeSet
@@ -21,15 +20,19 @@ class ClickMoreTextView : View {
     }
 
     private var textCharArray = charArrayOf()
-    private var textPaint: TextPaint = TextPaint()
-    public var moreTextPaint: TextPaint = TextPaint()
+    private var textPaint: TextPaint = TextPaint().apply {
+        letterSpacing = 0.07f
+    }
+    private var moreTextPaint: TextPaint = TextPaint().apply {
+        letterSpacing = 0.07f
+    }
     private var textPaintTop = 0f
     private var isBreakFlag = false//排版标识
 
     /**
      * 正文间距 倍数
      */
-    public var lineSpacingMultiplier = 1.0f
+    public var lineSpacingMultiplier = 1.642f
 
     /**
      * 最大行数
@@ -180,9 +183,11 @@ class ClickMoreTextView : View {
         this.moreTextSize = a.getDimension(R.styleable.ClickMoreTextView_textSize, 80f)
 
         moreTextPaint.isAntiAlias = true//抗锯齿
-        moreTextPaint.flags = Paint.UNDERLINE_TEXT_FLAG//下划线
+//        moreTextPaint.flags = Paint.UNDERLINE_TEXT_FLAG//下划线
         moreTextPaint.isFakeBoldText = true
         a.recycle()
+
+
     }
 
     override fun requestLayout() {
@@ -266,7 +271,7 @@ class ClickMoreTextView : View {
                 textLineYs.add(curY)
                 //断行需要回溯
                 curX = initX
-                curY += lineHeight * lineSpacingMultiplier
+                curY += lineHeight * lineSpacingMultiplier //+23//+ 23.sp
             }
             textPositions.add(textPosition)
             i++//移动游标
@@ -284,14 +289,14 @@ class ClickMoreTextView : View {
     }
 
     /**
-     * "..." 索引值
+     * " " 索引值
      */
     private var dotIndex = -1
 
     /**
-     * "..." 位置
+     * " " 位置
      */
-    private var dotPosition = TextPosition("...")
+    private var dotPosition = TextPosition(" ")
 
     /**
      * 记录 MoreText 位置
@@ -308,7 +313,7 @@ class ClickMoreTextView : View {
         if (lines != maxLines - 1) {
             return
         }
-        val dotLen = textPaint.measureText("...")
+        val dotLen = textPaint.measureText(" ")
         //目前在最后一行
         if (checkMoreTextForEnoughLine(curX, dotLen, availableWidth)//这一行满足一行时
             || checkMoreTextForParagraph(index)//当前是换行符
